@@ -1,0 +1,36 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: List files (for debugging)
+      run: |
+        ls -R src
+        ls -R test
+
+    - name: Compile Java files
+      run: |
+        javac -cp .:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar \
+          src/main/java/chatapp/*.java \
+          test/java/chatapp/*.java
+
+    - name: Run tests
+      run: |
+        java -cp .:lib/junit-4.13.2.jar:lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore chatapp.MessageTest chatapp.UserTest
