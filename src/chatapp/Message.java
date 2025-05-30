@@ -3,151 +3,186 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package chatapp;
+
 import java.util.*;
 import javax.swing.JOptionPane;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author nomat
  */
 public final class Message {
-    private int messageCount = 0;
+    
+    private static int messageCount = 0;
     private static int totalMessages = 0;
-    private static final List<Message> sentMessages = new ArrayList<>(); //Stores sent messages in memory
+    // A list to store all sent messages 
+    private static final List<Message> sentMessages = new ArrayList<>();
+
     private final String messageId;
     private final int messageNumber;
     private String recipient;
-    private String content; 
+    private String content;
     private final String messageHash;
-    
-    
-public Message(String recipient, String content) {
-    this.messageId = generateMessageId();
-    this.messageNumber = ++messageCount;
-    this.recipient = recipient;
-    this.content = content;
-    this.messageHash = createMessageHash();
-}
-    
-    private String generateMessageId(){
-        //generating a random number for a unique ID
-        // ID should only have 10 digits with zeros to make sure it is slways 10 digits 
-        return String.format("%010d", new Random().nextInt(1_000_000_000));
-    }
-    
-    public boolean checkRecipientStyle(){
-        // recipients tart with + and is <= 10 characters 
-        // != null to avoid crash
-        return recipient != null && recipient.startsWith("+") && recipient.length() <= 10;
-    }
-    
-    public boolean isMessageValid(){
-        // checks if contents is <= 250 characters
-        return content != null && content.length() <= 250;
-    }
-    
-    public String createMessageHash() {
-        //split("\\s+")	Splits message into words regardless of spacing
-        //Ternary (? :)	Used to handle edge cases like empty strings
-        //substring(0, 4)	Gets the first part of the message ID
-        
-        String[] words = content.trim().split("\\s+");
-        String firstWord = words.length > 0 ? words[0] : "";
-        String lastWord = words.length > 1 ? words[words.length - 1] : firstWord;
-        return (messageId.substring(0, 4) + ":" + messageNumber + ":" + firstWord + "-" + lastWord).toUpperCase();
-    }
-    
-    public String sendMessage() {
-        String[] options = {"Send", "Disregard", "Store"};
-        int choice = JOptionPane.showOptionDialog(null, "Choose an action for the message:",
-                "Message Options", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                null, options, options[0]);
 
-        switch (choice) {
-            case 0 -> {
+    // creates a message 
+    public Message(String recipient, String content) {
+        this.messageId = generateMessageId();
+        this.messageNumber = ++messageCount; // increment with each new message
+        this.recipient = recipient;
+        this.content = content;
+        this.messageHash = createMessageHash();
+    }
+    
+    // Generates a unique random number that is always 10 digits and adding zeros if needed 
+    private String generateMessageId() {
+        return String.format("%010d", new Random().nextInt(1_000_000_000));
+    }    
+
+    //make sure message ID is not more 10 characters
+    public boolean checkMessageId() {
+        return this.messageId.length() <= 10;
+    }    
+    
+    // For checking that cell starts with + and <= 10 character 
+    public boolean checkRecipientCell() {
+        return recipient != null && recipient.matches("\\+\\d{10,12}");
+    }    
+    
+    // Creates a unique hash for the message:
+    public String createMessageHash() {
+        // Get the first 2 characters of messageId
+        String idPart = messageId.substring(0, 2);
+        // Clean and split content into words, all in uppercase
+        String[] words = content.trim().toUpperCase().split("\\s+");
+        // Combine first and last words with no space or dash
+        String wordPart = words.length >= 2
+            ? words[0] + words[words.length - 1]
+            : words[0];  // Handle single-word messages
+        return idPart + ":" + messageNumber + ":" + wordPart;
+    }
+ 
+    // Ensures message content is no more than 250 characters.
+    public boolean isMessageValid() {
+        return content != null && content.length() <= 250;
+    }    
+    
+    // Returns a list of all sent messages with info
+    public static List<String> printMessage() {
+        List<String> messages = new ArrayList<>();
+        for (Message msg : sentMessages) {
+            messages.add("Message ID: " + msg.messageId +
+                         "\nMessage Hash: " + msg.messageHash +
+                         "\nRecipient: " + msg.recipient +
+                         "\nMessage: " + msg.content);
+        }
+        return messages;
+    }
+      
+    // Handles message action: send, disregard, or store
+    public String sendMessage(ImageIcon javaIcon) {
+        String[] choices = {
+                "Send Message",
+                "Disregard Message",
+                "Store Message to Send Later"
+        };
+
+        // Ask user what to do with this message
+        String selected = (String) JOptionPane.showInputDialog(
+                null,
+                "Choose what to do with the message:",
+                "📤 Send Option",
+                JOptionPane.PLAIN_MESSAGE, javaIcon, choices, choices[0]);
+
+        // If user presses cancel or closes box
+        if (selected == null) return "No action selected.";
+
+        switch (selected) {
+            case "Send Message" -> {
+                // Add this message to the sent list and increase count
                 sentMessages.add(this);
                 totalMessages++;
-                JOptionPane.showMessageDialog(null, printMessage());
-                return "Message successfully sent.";
+
+                // Show confirmation with all details
+                JOptionPane.showMessageDialog(
+                        null,
+                        "📨 Message Successfully Sent\n\n" +
+                                "Message ID: " + messageId +
+                                "\nMessage Hash: " + messageHash +
+                                "\nRecipient: " + recipient +
+                                "\nMessage: " + content,
+                        "✅ Message Sent",
+                        JOptionPane.INFORMATION_MESSAGE, javaIcon);
+                return "Message sent.";
             }
-            case 1 -> {
+
+            case "Disregard Message" -> {
+                // Show discard confirmation
+                JOptionPane.showMessageDialog(
+                        null,
+                        "❌ Message Disregarded...",
+                        "Disregarded",
+                        JOptionPane.WARNING_MESSAGE);
                 return "Message disregarded.";
             }
-            case 2 -> {
-                JOptionPane.showMessageDialog(null, storeMessage());
-                return "Message stored (JSON-style).";
+
+            case "Store Message to Send Later" -> {  
+                // Show message with JSON-style layout 
+                JOptionPane.showMessageDialog(
+                        null,
+                        "📥 Message Stored for Later\n\n" +
+                                "Message ID: " + messageId +
+                                "\nMessage Hash: " + messageHash +
+                                "\nRecipient: " + recipient +
+                                "\nMessage: " + content,
+                        "🗂️ Stored Message",
+                        JOptionPane.INFORMATION_MESSAGE, javaIcon);
+                return "Message stored.";
             }
+
             default -> {
-                return "No valid option selected.";
+                return "Unknown option.";
             }
         }
-    }   
-    
-    public String printMessage() {
-        return "Message ID: " + messageId +
-                "\nMessage Hash: " + messageHash +
-                "\nRecipient: " + recipient +
-                "\nMessage: " + content;
     }    
-    
+   
+    // Method to return how many messages were sent in total
     public static int returnTotalMessages() {
         return totalMessages;
-    }
-
-    public static String printAllMessages() {
-        if (sentMessages.isEmpty()) {
-            return "No messages sent.";
-        }
-        StringBuilder all = new StringBuilder();
-        for (Message msg : sentMessages) {
-            all.append(msg.printMessage()).append("\n\n");
-        }
-        return all.toString();
     }    
     
+    // returns the message details in a JSON format
     public String storeMessage() {
         return "{\n" +
                 "  \"messageId\": \"" + messageId + "\",\n" +
                 "  \"messageNumber\": " + messageNumber + ",\n" +
                 "  \"recipient\": \"" + recipient + "\",\n" +
                 "  \"content\": \"" + content + "\",\n" +
-                "  \"messageHash\": \"" + messageHash + "\"\n" +
-                "}";
-    }      
+                "  \"messageHash\": \"" + messageHash + "\"\n" +"}";
+    }    
     
-    public boolean checkMessageId(){
-        //checks if message ID is exactly 10 characters 
-        return this.messageId.length()== 10;
+    //this one is for testing
+    public String sendMessage(String action) {
+        switch (action.toLowerCase()) {
+            case "send":
+                sentMessages.add(this);
+                totalMessages++;
+                return "Message sent.";
+            case "disregard":
+                return "Message disregarded.";
+            case "store":
+                return "Message stored.";
+            default:
+                return "Unknown action.";
+        }
     }
-        
-    //getters 
-    public String getMessageId(){
-        return messageId;
-    }
-    
-    public int getMessageNumber(){
-        return messageNumber;
-    }
-    
-    public String getRecipient(){
-        return recipient;
-    }
-    
-    public String getContent(){
-        return content;
-    }
-    
-    //setters
-    public void setRecipient(String recipient){
-        this.recipient = recipient;
-    }
-    
-    public void setContent(String content){
-        this.content = content;
-    }
-    
-    public String getMessageHash() {
-        return messageHash;
-    }
-        
+
+    // Getters and Setters for testing 
+    public String getMessageId() { return messageId; }
+    public int getMessageNumber() { return messageNumber; }
+    public String getRecipient() { return recipient; }
+    public String getContent() { return content; }
+    public void setRecipient(String recipient) { this.recipient = recipient; }
+    public void setContent(String content) { this.content = content; }
+    public String getMessageHash() { return messageHash; }
 }
