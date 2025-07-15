@@ -1,0 +1,50 @@
+[
+  {
+    "messageId": "0806624736",
+    "messageNumber": 124,
+    "recipient": "+27718693002",
+    "content": "Hi Mike, can you join us for dinner tonight",
+    "messageHash": "08:124:HITONIGHT",
+    "type": "sent"
+  },
+  {
+    "messageId": "0497337808",
+    "messageNumber": 126,
+    "recipient": "+27834557896",
+    "content": "Did you get the cake?",
+    "messageHash": "04:126:DIDCAKE?",
+    "type": "sent"
+  },
+  {
+    "messageId": "0154953519",
+    "messageNumber": 127,
+    "recipient": "0838884567",
+    "content": "It is dinner time !",
+    "messageHash": "01:127:IT!",
+    "type": "sent"
+  },
+  {
+    "messageId": "0223736514",
+    "messageNumber": 128,
+    "recipient": "+27838884567",
+    "content": "Where are you? You are late! I have asked you to be on time.",
+    "messageHash": "02:128:WHERETIME.",
+    "type": "sent"
+  },
+  {
+    "messageId": "0436595324",
+    "messageNumber": 129,
+    "recipient": "+27838884567",
+    "content": "Ok I am leaving without you.",
+    "messageHash": "04:129:OKYOU.",
+    "type": "stored"
+  },
+  {
+    "messageId": "0019795715",
+    "messageNumber": 130,
+    "recipient": "+27830000000",
+    "content": "This is the longest message sent so far to ensure the method works properly.",
+    "messageHash": "00:130:THISPROPERLY.",
+    "type": "sent"
+  }
+]

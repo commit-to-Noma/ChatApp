@@ -1,8 +1,1 @@
-*.class
-*.log
-*.DS_Store
-*.iml
-/out/
-/target/
-/.idea/
-/*.jar
+/dist/

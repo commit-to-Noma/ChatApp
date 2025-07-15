@@ -4,7 +4,7 @@
  */
 package chatapp;
 
-import java.util.Scanner; 
+import javax.swing.*;
 
 /**
  *
@@ -109,73 +109,70 @@ public class User {
     }
         
     public String registerUser() {
-        Scanner input = new Scanner(System.in);
+        // First name
+        firstname = JOptionPane.showInputDialog(null, "Enter First Name:", "👤 Registration", JOptionPane.QUESTION_MESSAGE);
+        if (firstname == null) return "Cancelled";
 
-        System.out.print("Enter First Name: " );
-        firstname = input.nextLine();
-        
-        System.out.print("Enter Last Name: " );
-        lastname = input.nextLine();
-        
-        
-        // Loop until valid username
+        // Last name
+        lastname = JOptionPane.showInputDialog(null, "Enter Last Name:", "👤 Registration", JOptionPane.QUESTION_MESSAGE);
+        if (lastname == null) return "Cancelled";
+
+        // Username loop
         while (true) {
-            System.out.print("Enter Username: ");
-            username = input.nextLine();
+            username = JOptionPane.showInputDialog(null, "Enter Username (must include '_' and max 5 characters):", "🆔 Username", JOptionPane.QUESTION_MESSAGE);
+            if (username == null) return "Cancelled";
             if (CheckUserName(username)) {
-                System.out.println("Username successfully captured");
-                break; //stop looping if correct
+                JOptionPane.showMessageDialog(null, "✅ Username successfully captured");
+                break;
             } else {
-                System.out.println("Username is not correctly formatted, please ensure that your username contains an underscore and is no more than five characters in length.");
+                JOptionPane.showMessageDialog(null, "❌ Invalid username.\nIt must contain an underscore and be no more than 5 characters.");
             }
         }
 
-        // Loop until valid password
+        // Password loop
         while (true) {
-            System.out.print("Enter Password: ");
-            password = input.nextLine();
+            password = JOptionPane.showInputDialog(null, "Enter Password (min 8 chars, 1 capital, 1 digit, 1 special):", "🔐 Password", JOptionPane.QUESTION_MESSAGE);
+            if (password == null) return "Cancelled";
             if (checkPasswordComplexity(password)) {
-                System.out.println("Password successfully captured");
-                break; //stop looping if correct
+                JOptionPane.showMessageDialog(null, "✅ Password successfully captured");
+                break;
             } else {
-                System.out.println("Password is not correctly formatted; please ensure it has at least 8 characters, a capital letter, a number, and a special character.");
+                JOptionPane.showMessageDialog(null, "❌ Invalid password.\nMust be at least 8 characters long with uppercase, digit, and special character.");
             }
         }
 
-        // Loop until valid cell phone number
+        // Cell number loop
         while (true) {
-            System.out.print("Enter cellnumber: ");
-            cellnumber = input.nextLine();
+            cellnumber = JOptionPane.showInputDialog(null, "Enter Cell Number (e.g. +27831234567):", "📱 Phone Number", JOptionPane.QUESTION_MESSAGE);
+            if (cellnumber == null) return "Cancelled";
             if (checkCellPhoneNumber(cellnumber)) {
-                System.out.println("Cell phone number successfully added");
-                break; //stop looping if correct 
+                JOptionPane.showMessageDialog(null, "📱 Cell phone number successfully added");
+                break;
             } else {
-                System.out.println("Cell phone number incorrectly formatted or does not contain international code.");
+                JOptionPane.showMessageDialog(null, "❌ Invalid number.\nMust start with '+' and include correct digits.");
             }
         }
 
-        // When all details are correct, print registration complete message
-        System.out.println("\n====================");
-        System.out.println("REGISTRATION COMPLETE");
-        System.out.println("====================");
-        System.out.println("Username successfully captured");
-        System.out.println("Password successfully captured");
-        System.out.println("Cell phone number successfully added");
+        // Final confirmation
+        JOptionPane.showMessageDialog(null,
+                "🎉 REGISTRATION COMPLETE\n\n" +
+                        "✅ Username captured\n" +
+                        "✅ Password captured\n" +
+                        "📱 Cell phone number added",
+                "✅ Registration Success",
+                JOptionPane.INFORMATION_MESSAGE);
 
-        return ""; // needs to return something
+        return "Success";
     }
     
     public boolean loginUser() {
-        Scanner input = new Scanner(System.in);
+        String loginUsername = JOptionPane.showInputDialog(null, "Enter your username:", "🔐 Login", JOptionPane.QUESTION_MESSAGE);
+        if (loginUsername == null) return false;
 
-        System.out.print("Enter your username to login: ");
-        String loginUsername = input.nextLine();
+        String loginPassword = JOptionPane.showInputDialog(null, "Enter your password:", "🔐 Login", JOptionPane.QUESTION_MESSAGE);
+        if (loginPassword == null) return false;
 
-        System.out.print("Enter your password to login: ");
-        String loginPassword = input.nextLine();
-        //looping until login detail match whats stored
         return loginUsername.equals(username) && loginPassword.equals(password);
-           
     }
     
     //helper function for testing to help pass login credentials
